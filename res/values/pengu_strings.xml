@@ -83,6 +83,7 @@
     <string name="volume_panel_style_default">Default</string>
     <string name="volume_panel_style_expandable">Expandable</string>
     <string name="volume_panel_style_oneui">One UI</string>
+    <string name="volume_panel_style_myui">MyUI</string>
 
     <string name="depth_wallpaper_bottom_fade_title">Bottom fade</string>
     <string name="depth_wallpaper_bottom_fade_summary">Fade out the wallpaper at the bottom</string>
