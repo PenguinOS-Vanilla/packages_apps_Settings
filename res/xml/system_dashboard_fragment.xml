@@ -157,6 +157,14 @@
         settings:controller="com.android.settings.system.ResetPreferenceController"/>
 
     <Preference
+        android:key="experimental_features_settings"
+        android:title="@string/experimental_features_title"
+        android:summary="@string/experimental_features_summary"
+        android:icon="@drawable/ic_settings_experimental"
+        android:order="89"
+        android:fragment="com.android.settings.system.ExperimentalFeaturesSettings"/>
+
+    <Preference
         android:key="other_settings"
         android:title="@string/other_settings"
         android:icon="@drawable/ic_settings_other"

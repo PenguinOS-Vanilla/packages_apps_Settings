@@ -124,4 +124,11 @@
     <string name="dynamic_island_recent_apps_title">Recent apps</string>
     <string name="dynamic_island_recent_apps_summary">Show the app you switched from</string>
 
+    <!-- Experimental features -->
+    <string name="experimental_features_title">Experimental features</string>
+    <string name="experimental_features_summary">Try features that are still being worked on</string>
+    <string name="ls_media_expand_title">iOS-style lock screen media art</string>
+    <string name="ls_media_expand_summary">Tap the artwork in the lock screen player to fill the lock screen with it, and tap it again to go back</string>
+    <string name="back_to_app_indicator_title">Back to app</string>
+    <string name="back_to_app_indicator_summary">When an app opens another, show the app you came from in the status bar and tap it to go back</string>
 </resources>

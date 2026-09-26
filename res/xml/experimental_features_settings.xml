@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+     Copyright (C) 2026 The PenguinOS Project
+     SPDX-License-Identifier: Apache-2.0
+-->
+<PreferenceScreen
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:key="experimental_features_settings"
+    android:title="@string/experimental_features_title">
+
+    <com.android.settings.custom.preference.SystemSettingSwitchPreference
+        android:key="ls_media_expand"
+        android:title="@string/ls_media_expand_title"
+        android:summary="@string/ls_media_expand_summary"
+        android:defaultValue="false" />
+
+    <com.android.settings.custom.preference.SystemSettingSwitchPreference
+        android:key="back_to_app_indicator"
+        android:title="@string/back_to_app_indicator_title"
+        android:summary="@string/back_to_app_indicator_summary"
+        android:defaultValue="false" />
+
+</PreferenceScreen>
