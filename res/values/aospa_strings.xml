@@ -487,7 +487,6 @@
     <string name="display_rotation_270_title">270 degrees</string>
     <string name="spoof_settings_title">Spoofing &amp; utilities</string>
     <string name="auto_select">Auto-select</string>
-    <string name="cancel">Cancel</string>
     <string name="clear_search">Clear search</string>
     <string name="delete">Delete</string>
     <string name="hide_system_apps">Hide system apps</string>
