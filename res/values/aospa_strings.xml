@@ -314,8 +314,6 @@
     <!-- Wifi Display settings. The title of a menu item to disable mirroring confimration [CHAR LIMIT=40] -->
     <string name="mirroring_confirmation_disable_menu_item">Disable mirroring confirmation</string>
 
-    <string name="aospa_version">Paranoid Android Version</string>
-
     <!-- Per-app configs -->
     <string name="per_app_config_empty_text">No installed apps support current settings</string>
 
