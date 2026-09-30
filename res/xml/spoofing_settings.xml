@@ -9,26 +9,6 @@
     android:key="spoofing_settings"
     android:title="@string/spoof_settings_title">
 
-    <!-- Integrity & Attestation Category -->
-    <PreferenceCategory
-        android:key="system_spoof_category"
-        android:title="@string/system_spoof_category_title">
-
-        <!-- Play Integrity Fix -->
-        <Preference
-            android:key="play_integrity_fix"
-            android:title="@string/play_integrity_fix_title"
-            android:summary="@string/play_integrity_fix_summary"
-            android:fragment="com.android.settings.custom.spoofing.PlayIntegrityFix" />
-
-        <!-- TEE Simulator -->
-        <Preference
-            android:key="tee_simulator"
-            android:title="@string/tee_simulator_title"
-            android:summary="@string/tee_simulator_summary"
-            android:fragment="com.android.settings.custom.spoofing.TeeSimulatorSettings" />    
-    </PreferenceCategory>
-
     <!-- Hardware & App Spoofing Category -->
     <PreferenceCategory
         android:key="hardware_spoof_category"
