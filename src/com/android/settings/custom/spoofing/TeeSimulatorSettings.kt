@@ -148,36 +148,42 @@ class TeeSimulatorSettings : SettingsPreferenceFragment() {
 
     private fun ensureStoreDir(): Boolean {
         val dir = File(STORE_DIR)
-        if (dir.exists()) return true
-        return dir.mkdirs()
+        if (dir.exists() && dir.canWrite()) return true
+        if (dir.mkdirs()) {
+            dir.setReadable(true, false)
+            dir.setWritable(true, true)
+            dir.setExecutable(true, false)
+            return true
+        }
+        try {
+            val p = Runtime.getRuntime().exec(arrayOf("su", "-c",
+                "mkdir -p $STORE_DIR && chmod 775 $STORE_DIR && chown 1000:1000 $STORE_DIR && restorecon -R $STORE_DIR"))
+            p.waitFor()
+            if (dir.exists()) return true
+        } catch (_: Exception) {}
+        return dir.exists()
     }
 
     private fun saveFileToStore(filename: String, bytes: ByteArray): Boolean {
         ensureStoreDir()
         val target = File(STORE_DIR, filename)
-        val temp = File(STORE_DIR, "$filename.tmp")
-        return try {
-            FileOutputStream(temp).use { it.write(bytes) }
-            temp.setReadable(true, false)
-            temp.setWritable(true, true)
-            if (temp.renameTo(target)) {
-                target.setReadable(true, false)
-                target.setWritable(true, true)
-                true
-            } else {
-                FileOutputStream(target).use { it.write(bytes) }
-                target.setReadable(true, false)
-                target.setWritable(true, true)
-                true
-            }
-        } catch (e: Exception) {
-            e.printStackTrace()
-            false
-        } finally {
-            if (temp.exists()) {
+        try {
+            FileOutputStream(target).use { it.write(bytes) }
+            target.setReadable(true, false)
+            target.setWritable(true, true)
+            return true
+        } catch (_: Exception) {
+            try {
+                val temp = File(requireContext().cacheDir, filename)
+                FileOutputStream(temp).use { it.write(bytes) }
+                val p = Runtime.getRuntime().exec(arrayOf("su", "-c",
+                    "cp ${temp.absolutePath} ${target.absolutePath} && chmod 664 ${target.absolutePath} && chown 1000:1000 ${target.absolutePath} && restorecon ${target.absolutePath}"))
+                p.waitFor()
                 temp.delete()
-            }
+                return target.exists()
+            } catch (_: Exception) {}
         }
+        return false
     }
 
     private fun persistConfigToStore() {
@@ -213,25 +219,13 @@ class TeeSimulatorSettings : SettingsPreferenceFragment() {
     private fun refreshKeyboxSummary() {
         val pref = findPreference<Preference>(KEY_KEYBOX_PATH) ?: return
         val deletePref = findPreference<Preference>(KEY_DELETE_KEYBOX)
-        val file = if (teeKeyboxPath.isNotEmpty()) File(teeKeyboxPath) else null
-        val storedXml = Settings.Secure.getString(requireContext().contentResolver, SETTING_KEYBOX)
-        val hasKeybox = (file != null && file.exists() && file.length() > 0) || !storedXml.isNullOrEmpty()
-
+        val hasKeybox = teeKeyboxPath.isNotEmpty() && (File(teeKeyboxPath).exists() || 
+            !Settings.Secure.getString(requireContext().contentResolver, SETTING_KEYBOX).isNullOrEmpty())
         if (!hasKeybox) {
             pref.summary = getString(R.string.tee_simulator_no_keybox)
             deletePref?.isEnabled = false
         } else {
-            val contentToInspect = if (file != null && file.exists()) {
-                try { file.readText() } catch (_: Exception) { storedXml ?: "" }
-            } else {
-                storedXml ?: ""
-            }
-            val res = KeyboxParser.parseAndNormalize(contentToInspect)
-            if (res.isValid && res.summary.isNotEmpty()) {
-                pref.summary = "${getString(R.string.tee_simulator_keybox_installed)}: ${res.summary}"
-            } else {
-                pref.summary = getString(R.string.tee_simulator_keybox_installed)
-            }
+            pref.summary = getString(R.string.tee_simulator_keybox_installed)
             deletePref?.isEnabled = true
         }
     }
@@ -258,7 +252,7 @@ class TeeSimulatorSettings : SettingsPreferenceFragment() {
             addCategory(Intent.CATEGORY_OPENABLE)
             type = "*/*"
             addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
-            putExtra(Intent.EXTRA_MIME_TYPES, arrayOf("text/xml", "application/xml", "application/json", "text/plain", "*/*"))
+            putExtra(Intent.EXTRA_MIME_TYPES, arrayOf("text/xml", "application/xml", "*/*"))
         }
         keyboxPickerLauncher.launch(intent)
     }
@@ -266,33 +260,25 @@ class TeeSimulatorSettings : SettingsPreferenceFragment() {
     private fun onKeyboxSelected(uri: Uri) {
         val context = requireContext()
         try {
-            val rawContent = context.contentResolver.openInputStream(uri)?.use {
+            val content = context.contentResolver.openInputStream(uri)?.use {
                 it.readBytes().toString(Charsets.UTF_8)
             } ?: ""
 
-            if (rawContent.isEmpty()) {
+            if (content.isEmpty()) {
                 toast(getString(R.string.tee_simulator_keybox_failed))
                 return
             }
 
-            val parseResult = KeyboxParser.parseAndNormalize(rawContent)
-            if (!parseResult.isValid) {
-                val errorMsg = parseResult.error ?: getString(R.string.tee_simulator_keybox_failed)
-                toast("Invalid Keybox: $errorMsg")
-                return
-            }
-
-            val normalizedXml = parseResult.normalizedXml
-            Settings.Secure.putString(context.contentResolver, SETTING_KEYBOX, normalizedXml)
+            Settings.Secure.putString(context.contentResolver, SETTING_KEYBOX, content)
             val target = File(STORE_DIR, KEYBOX_FILE)
             teeKeyboxPath = target.absolutePath
 
-            saveFileToStore(KEYBOX_FILE, normalizedXml.toByteArray(Charsets.UTF_8))
+            saveFileToStore(KEYBOX_FILE, content.toByteArray(Charsets.UTF_8))
             persistConfigToStore()
             refreshKeyboxSummary()
             killGms()
 
-            toast("${getString(R.string.tee_simulator_keybox_imported)} (${parseResult.summary})")
+            toast(getString(R.string.tee_simulator_keybox_imported))
         } catch (e: Exception) {
             e.printStackTrace()
             toast(getString(R.string.tee_simulator_keybox_failed))
