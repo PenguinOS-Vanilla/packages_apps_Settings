@@ -451,7 +451,6 @@
     <string name="display_rotation_180_title">180 degrees</string>
     <string name="display_rotation_270_title">270 degrees</string>
     <string name="spoof_settings_title">Spoofing &amp; utilities</string>
-    <string name="auto_select">Auto-select</string>
     <string name="cancel">Cancel</string>
     <string name="clear_search">Clear search</string>
     <string name="delete">Delete</string>
@@ -487,9 +486,7 @@
     <string name="gs_failed">Failed: %s</string>
     <!-- Added Spoofing & Custom Strings -->
     <string name="spoofing_category_summary">Hardware spoofing, Google Photos &amp; system tools</string>
-    <string name="system_spoof_title">System spoof</string>
     <string name="miscellaneous_title">Miscellaneous</string>
-    <string name="deselect_all">Deselect all</string>
 
     <!-- Display settings screen, increased touch polling rate settings title -->
     <string name="touch_polling_title">High touch polling rate</string>
