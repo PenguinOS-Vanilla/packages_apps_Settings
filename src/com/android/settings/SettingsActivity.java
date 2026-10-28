@@ -289,9 +289,6 @@ public class SettingsActivity extends SettingsBaseActivity
 
     /** Keep the scrolling viewport under the gesture bar so its damage covers that area. */
     void configureEdgeToEdgeList(androidx.recyclerview.widget.RecyclerView list) {
-        if (getResources().getConfiguration().smallestScreenWidthDp < 600) {
-            return;
-        }
         final android.view.ViewGroup content = findViewById(android.R.id.content);
         if (content == null) {
             return;
